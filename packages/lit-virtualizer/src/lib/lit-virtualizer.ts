@@ -2,6 +2,10 @@ import { html, css, LitElement } from 'lit-element';
 import { scroll } from './scroll.js';
 
 export class LitVirtualizer extends LitElement {
+    _template
+    items
+    scrollTarget
+
     static get properties() {
         return {
             items: {},
@@ -12,7 +16,7 @@ export class LitVirtualizer extends LitElement {
 
     constructor() {
         super();
-        this.renderRoot = this;
+        (this as {renderRoot: Element | DocumentFragment}).renderRoot = this;
     }
 
     /**

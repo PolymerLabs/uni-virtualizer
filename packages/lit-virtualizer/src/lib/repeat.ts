@@ -2,6 +2,10 @@ import { directive, NodePart, createMarker } from 'lit-html';
 import { VirtualRepeater } from './uni-virtualizer/lib/VirtualRepeater.js';
 
 export const LitMixin = Superclass => class extends Superclass {
+  _pool;
+  _template;
+  _hostPart;
+  
   constructor(config) {
     const {part, template} = config;
     config.container = /*config.container ||*/ part.startNode.parentNode;
