@@ -1,6 +1,17 @@
 import {Layout1dBase} from './Layout1dBase.js';
 
 export class Layout1d extends Layout1dBase {
+  _physicalItems;
+  _newPhysicalItems;
+  _metrics;
+  _anchorIdx;
+  _anchorPos;
+  _stable;
+  _needsRemeasure;
+  _nMeasured;
+  _tMeasured;
+  _estimate;
+
   constructor(config) {
     super(config);
     this._physicalItems = new Map();

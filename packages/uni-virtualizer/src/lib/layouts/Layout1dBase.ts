@@ -1,6 +1,33 @@
 import EventTarget from '../polyfillLoaders/EventTarget.js';
 
 export class Layout1dBase {
+  _physicalMin;
+  _physicalMax;
+  _first;
+  _last;
+  _latestCoords;
+  _itemSize;
+  _spacing;
+  _sizeDim;
+  _secondarySizeDim;
+  _positionDim;
+  _secondaryPositionDim;
+  _direction;
+  _scrollPosition;
+  _scrollError;
+  _viewportSize;
+  _totalItems;
+  _scrollSize;
+  _overhang;
+  _pendingReflow;
+  _scrollToIndex;
+  _scrollToAnchor;
+  _eventTargetPromise;
+
+  // Not directly on this class
+  _eventTarget;
+  _spacingChanged;
+
   constructor(config) {
     this._physicalMin = 0;
     this._physicalMax = 0;
@@ -247,11 +274,13 @@ export class Layout1dBase {
     }
 
     if (this._first === -1 && this._last === -1) {
-      this._emitRange();
+      // TODO: have default empty object for emitRange instead
+      this._emitRange({});
     } else if (
         this._first !== _first || this._last !== _last ||
         this._spacingChanged) {
-      this._emitRange();
+      // TODO: have default empty object for emitRange instead
+      this._emitRange({});
       this._emitChildPositions();
     }
     this._emitScrollError();

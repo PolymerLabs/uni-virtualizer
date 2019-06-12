@@ -1,4 +1,29 @@
 export class VirtualRepeater {
+  _createElementFn;
+  _updateElementFn;
+  _recycleElementFn;
+  _elementKeyFn;
+  _measureCallback;
+  _items;
+  _totalItems;
+  _num;
+  _first;
+  _last;
+  _prevFirst;
+  _prevLast;
+  _needsReset;
+  _needsRemeasure;
+  _pendingRender;
+  _container;
+  _ordered;
+  _active;
+  _prevActive;
+  _keyToChild;
+  _childToKey;
+  _indexToMeasure;
+  __incremental;
+  _prevNum;
+  
   constructor(config) {
     this._createElementFn = null;
     this._updateElementFn = null;

@@ -27,6 +27,9 @@ function attachGlobalContainerStylesheet() {
 }
 
 export class RangeChangeEvent extends Event {
+  _first;
+  _last;
+
   constructor(type, init) {
     super(type, init);
     this._first = Math.floor(init.first || 0);
@@ -41,8 +44,26 @@ export class RangeChangeEvent extends Event {
 }
 
 export class VirtualScroller extends VirtualRepeater {
+  _needsUpdateView;
+  _layout;
+  _lazyLoadDefaultLayout;
+  _scrollTarget;
+  _sizer;
+  _scrollSize;
+  _scrollErr;
+  _childrenPos;
+  _containerElement;
+  _containerInlineStyle;
+  _containerStylesheet;
+  _useShadowDOM;
+  _containerSize;
+  _containerRO;
+  _childrenRO;
+  _skipNextChildrenSizeChanged;
+
   constructor(config) {
-    super();
+    // TODO: Shouldn't we just pass config. Why do Object.assign after?
+    super({});
 
     this._num = 0;
     this._first = -1;
@@ -149,7 +170,7 @@ export class VirtualScroller extends VirtualRepeater {
       this._layout.removeEventListener('rangechange', this);
       // Reset container size so layout can get correct viewport size.
       if (this._containerElement) {
-        this._sizeContainer();
+        this._sizeContainer(undefined);
       }
     }
 
@@ -232,7 +253,7 @@ export class VirtualScroller extends VirtualRepeater {
   async _render() {
     if (this._lazyLoadDefaultLayout && !this._layout) {
       const { Layout1d } = await import('./layouts/Layout1d.js');
-      this.layout = new Layout1d();
+      this.layout = new Layout1d({});
       return;
     }
 
@@ -326,7 +347,7 @@ export class VirtualScroller extends VirtualRepeater {
       this._containerRO = new ResizeObserver(
         (entries) => this._containerSizeChanged(entries[0].contentRect));
       this._childrenRO =
-        new ResizeObserver((entries) => this._childrenSizeChanged(entries));
+        new ResizeObserver((entries) => this._childrenSizeChanged());
     }
   }
 
@@ -460,7 +481,7 @@ export class VirtualScroller extends VirtualRepeater {
   _positionChildren(pos) {
     const kids = this._kids;
     Object.keys(pos).forEach(key => {
-      const idx = key - this._first;
+      const idx = (key as unknown as number) - this._first;
       const child = kids[idx];
       if (child) {
         const {top, left} = pos[key];

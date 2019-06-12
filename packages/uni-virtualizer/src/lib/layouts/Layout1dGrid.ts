@@ -1,6 +1,8 @@
 import {Layout1dBase} from './Layout1dBase.js';
 
 export class Layout1dGrid extends Layout1dBase {
+  _rolumns;
+  
   constructor(config) {
     super(config);
     this._rolumns = 1;

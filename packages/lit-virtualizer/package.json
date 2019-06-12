@@ -10,9 +10,7 @@
     ],
     "module": "lit-virtualizer.js",
     "scripts": {
-        "old-build": "cp -r src/ .",
-        "_build-comment": "Once uni-virtualizer is TS, just 'tsc' will be sufficient.",
-        "build": "tsc && (cd lib && ln -s ../../uni-virtualizer/src/ uni-virtualizer)",
+        "build": "tsc",
         "prepare": "npm run build",
         "test": "karma start karma.conf.js",
         "test:screenshot": "cd test/screenshot && rollup -c && mocha screenshot.js",
