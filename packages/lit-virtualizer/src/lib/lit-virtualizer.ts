@@ -1,18 +1,23 @@
-import { html, css, LitElement } from 'lit-element';
+import { html, LitElement, customElement, property, TemplateResult } from 'lit-element';
 import { scroll } from './scroll.js';
 
+/**
+ * A LitElement wrapper of the scroll directive.
+ * 
+ * Import this module to declare the lit-virtualizer custom element.
+ * Pass an items array, template, and scroll target as properties to the
+ * <lit-virtualizer> element.
+ */
+@customElement('lit-virtualizer')
 export class LitVirtualizer extends LitElement {
-    _template
-    items
-    scrollTarget
+    @property()
+    _template: (item: any, index?: number) => TemplateResult
 
-    static get properties() {
-        return {
-            items: {},
-            template: {},
-            scrollTarget: {} 
-        }
-    }
+    @property()
+    items: Array<any>
+
+    @property()
+    scrollTarget: Element | Window
 
     constructor() {
         super();
@@ -32,7 +37,7 @@ export class LitVirtualizer extends LitElement {
         }
     }
 
-    render() {
+    render(): TemplateResult {
         return html`${scroll({
             items: this.items,
             template: this._template,
@@ -41,5 +46,3 @@ export class LitVirtualizer extends LitElement {
         })}`;
     }
 }
-
-customElements.define('lit-virtualizer', LitVirtualizer);

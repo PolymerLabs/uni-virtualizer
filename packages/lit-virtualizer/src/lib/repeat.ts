@@ -1,48 +1,61 @@
-import { directive, NodePart, createMarker } from 'lit-html';
+import { directive, NodePart, createMarker, TemplateResult } from 'lit-html';
 import { VirtualRepeater } from './uni-virtualizer/lib/VirtualRepeater.js';
 
+/**
+ * Mixin for VirtualRepeater and VirtualScroller. This mixin overrides the generic
+ * methods in those classes to provide lit-specific implementations of element
+ * creation and manipulation.
+ * 
+ * This mixin implements child recycling, so children can be reused after removal
+ * from the DOM.
+ */
 export const LitMixin = Superclass => class extends Superclass {
-  _pool;
-  _template;
-  _hostPart;
+  // NodeParts that are available for reuse
+  _pool: Array<NodePart>;
+
+  // Function for generating each item's DOM
+  _template: (item: any, index?: number) => TemplateResult;
+
+  _hostPart: NodePart;
   
   constructor(config) {
-    const {part, template} = config;
-    config.container = /*config.container ||*/ part.startNode.parentNode;
-    config.scrollTarget = config.scrollTarget || config.container;
-    super(config);
+    const {part, template, useShadowDOM, layout} = config;
+    let container = part.startNode.parentNode;
+    let scrollTarget = config.scrollTarget || container;
+    super({container, scrollTarget, useShadowDOM, layout});
+
     this._pool = [];
     this._template = template;
     this._hostPart = part;
   }
 
-  createElement() {
+  createElement(): NodePart {
     return this._pool.pop() || new NodePart(this._hostPart.options);
   }
 
-  updateElement(part, item, idx) {
+  updateElement(part: NodePart, item, idx: number) {
     part.setValue(this._template(item, idx));
     part.commit();
   }
 
-  recycleElement(part) {
+  recycleElement(part: NodePart) {
     this._pool.push(part);
   }
 
   // Lit-specific overrides for node manipulation
-  get _kids() {
+  get _kids(): Array<Node> {
     return this._ordered.map(p => p.startNode.nextElementSibling);
   }
 
-  _node(part) {
+  _node(part: NodePart): Node {
     return part.startNode;
   }
 
-  _nextSibling(part) {
+  _nextSibling(part: NodePart): Node {
     return part.endNode.nextSibling;
   }
 
-  _insertBefore(part, referenceNode) {
+  _insertBefore(part: NodePart, referenceNode: Node) {
     if (referenceNode === null) {
       referenceNode = this._hostPart.endNode;
     }
@@ -66,7 +79,7 @@ export const LitMixin = Superclass => class extends Superclass {
     }
   }
 
-  _hideChild(part) {
+  _hideChild(part: NodePart) {
     let node = part.startNode;
     while (node && node !== part.endNode) {
       super._hideChild(node);
@@ -74,7 +87,7 @@ export const LitMixin = Superclass => class extends Superclass {
     }
   }
 
-  _showChild(part) {
+  _showChild(part: NodePart) {
     let node = part.startNode;
     while (node && node !== part.endNode) {
       super._showChild(node);

@@ -1,77 +1,55 @@
 import EventTarget from '../polyfillLoaders/EventTarget.js';
 
-export class Layout1dBase {
-  _physicalMin;
-  _physicalMax;
-  _first;
-  _last;
-  _latestCoords;
-  _itemSize;
-  _spacing;
-  _sizeDim;
-  _secondarySizeDim;
-  _positionDim;
-  _secondaryPositionDim;
-  _direction;
-  _scrollPosition;
-  _scrollError;
-  _viewportSize;
-  _totalItems;
-  _scrollSize;
-  _overhang;
-  _pendingReflow;
-  _scrollToIndex;
-  _scrollToAnchor;
-  _eventTargetPromise;
+export interface Coordinates {
+  left: number,
+  top: number
+}
+export type Dimensions = {
+  [key in dimension]: number
+}
+type dimension = 'height' | 'width';
+type position = 'left' | 'top';
+type direction = 'vertical' | 'horizontal';
+
+export abstract class Layout1dBase {
+  _physicalMin: number = 0;
+  _physicalMax: number = 0;
+  _first: number = -1;
+  _last: number = -1;
+  protected _latestCoords: Coordinates = {left: 0, top: 0};
+  protected _itemSize: Dimensions = {width: 100, height: 100};
+  protected _spacing: number = 0;
+  _sizeDim: dimension = 'height';
+  _secondarySizeDim: dimension = 'width';
+  _positionDim: position = 'top';
+  _secondaryPositionDim: position = 'left';
+  protected _direction: direction = 'vertical';
+  _scrollPosition: number = 0;
+  _scrollError: number = 0;
+  protected _viewportSize: Dimensions = {width: 0, height: 0};
+  protected _totalItems: number = 0;
+  _scrollSize: number = 1;
+  /**
+   * Number of pixels beyond the visible size of the container to still include in the
+   * active range of items.
+   */
+  _overhang: number = 150;
+  _pendingReflow: boolean = false;
+  _scrollToIndex: number = -1;
+  _scrollToAnchor: number = 0;
+  _eventTargetPromise: Promise<any> = (EventTarget().then(Ctor => this._eventTarget = new Ctor()));
 
   // Not directly on this class
   _eventTarget;
   _spacingChanged;
 
   constructor(config) {
-    this._physicalMin = 0;
-    this._physicalMax = 0;
-
-    this._first = -1;
-    this._last = -1;
-
-    this._latestCoords = {left: 0, top: 0};
-
-    this._itemSize = {width: 100, height: 100};
-    this._spacing = 0;
-
-    this._sizeDim = 'height';
-    this._secondarySizeDim = 'width';
-    this._positionDim = 'top';
-    this._secondaryPositionDim = 'left';
-    this._direction = 'vertical';
-
-    this._scrollPosition = 0;
-    this._scrollError = 0;
-    this._viewportSize = {width: 0, height: 0};
-    this._totalItems = 0;
-
-    this._scrollSize = 1;
-
-    /**
-     * Number of pixels beyond the visible size of the container to still include in the
-     * active range of items.
-     */
-    this._overhang = 150;
-
-    this._pendingReflow = false;
-
-    this._scrollToIndex = -1;
-    this._scrollToAnchor = 0;
-
-    this._eventTargetPromise = (EventTarget().then(Ctor => this._eventTarget = new Ctor()));
-
     Object.assign(this, config);
   }
 
   // public properties
 
-  get totalItems() {
+  get totalItems(): number {
     return this._totalItems;
   }
   set totalItems(num) {
@@ -81,7 +59,7 @@ export class Layout1dBase {
     }
   }
 
-  get direction() {
+  get direction(): direction {
     return this._direction;
   }
   set direction(dir) {
@@ -97,7 +75,7 @@ export class Layout1dBase {
     }
   }
 
-  get itemSize() {
+  get itemSize(): Dimensions {
     return this._itemSize;
   }
   set itemSize(dims) {
@@ -115,7 +93,7 @@ export class Layout1dBase {
   /**
    * The amount of space in between items.
    */
-  get spacing() {
+  get spacing(): number {
     return this._spacing;
   }
   set spacing(px) {
@@ -125,7 +103,7 @@ export class Layout1dBase {
     }
   }
 
-  get viewportSize() {
+  get viewportSize(): Dimensions {
     return this._viewportSize;
   }
   set viewportSize(dims) {
@@ -138,7 +116,7 @@ export class Layout1dBase {
     }
   }
 
-  get viewportScroll() {
+  get viewportScroll(): Coordinates {
     return this._latestCoords;
   }
   set viewportScroll(coords) {
@@ -157,7 +135,7 @@ export class Layout1dBase {
    * The size of an item in the scrolling direction + space between items.
    * @private
    */
-  get _delta() {
+  protected get _delta(): number {
     return this._itemDim1 + this._spacing;
   }
 
@@ -165,7 +143,7 @@ export class Layout1dBase {
    * The height or width of an item, whichever corresponds to the scrolling direction.
    * @private
    */
-  get _itemDim1() {
+  protected get _itemDim1(): number {
     return this._itemSize[this._sizeDim];
   }
 
@@ -173,7 +151,7 @@ export class Layout1dBase {
    * The height or width of an item, whichever does NOT correspond to the scrolling direction.
    * @private
    */
-  get _itemDim2() {
+  protected get _itemDim2(): number {
     return this._itemSize[this._secondarySizeDim];
   }
 
@@ -181,7 +159,7 @@ export class Layout1dBase {
    * The height or width of the viewport, whichever corresponds to the scrolling direction.
    * @private
    */
-  get _viewDim1() {
+  protected get _viewDim1(): number {
     return this._viewportSize[this._sizeDim];
   }
 
@@ -189,7 +167,7 @@ export class Layout1dBase {
    * The height or width of the viewport, whichever does NOT correspond to the scrolling direction.
    * @private
    */
-  get _viewDim2() {
+  protected get _viewDim2(): number {
     return this._viewportSize[this._secondarySizeDim];
   }
 
@@ -197,7 +175,7 @@ export class Layout1dBase {
    * Number of items to display.
    * @private
    */
-  get _num() {
+  private get _num(): number {
     if (this._first === -1 || this._last === -1) {
       return 0;
     }
@@ -206,14 +184,14 @@ export class Layout1dBase {
 
   // public methods
 
-  reflowIfNeeded() {
+  reflowIfNeeded(): void {
     if (this._pendingReflow) {
       this._pendingReflow = false;
       this._reflow();
     }
   }
 
-  scrollToIndex(index, position = 'start') {
+  scrollToIndex(index, position = 'start'): void {
     if (!Number.isFinite(index))
       return;
     index = Math.min(this.totalItems, Math.max(0, index));
@@ -258,11 +236,11 @@ export class Layout1dBase {
 
   ///
 
-  _scheduleReflow() {
+  protected _scheduleReflow(): void {
     this._pendingReflow = true;
   }
 
-  _reflow() {
+  protected _reflow(): void {
     const {_first, _last, _scrollSize} = this;
 
     this._updateScrollSize();
@@ -275,12 +253,12 @@ export class Layout1dBase {
 
     if (this._first === -1 && this._last === -1) {
       // TODO: have default empty object for emitRange instead
-      this._emitRange({});
+      this._emitRange();
     } else if (
         this._first !== _first || this._last !== _last ||
         this._spacingChanged) {
       // TODO: have default empty object for emitRange instead
-      this._emitRange({});
+      this._emitRange();
       this._emitChildPositions();
     }
     this._emitScrollError();
@@ -289,13 +267,13 @@ export class Layout1dBase {
   /**
    * Estimates the total length of all items in the scrolling direction, including spacing.
    */
-  _updateScrollSize() {
+  protected _updateScrollSize(): void {
     // Ensure we have at least 1px - this allows getting at least 1 item to be
     // rendered.
     this._scrollSize = Math.max(1, this._totalItems * this._delta);
   }
 
-  _checkThresholds() {
+  private _checkThresholds(): void {
     if (this._viewDim1 === 0 && this._num > 0) {
       this._scheduleReflow();
     } else {
@@ -309,7 +287,7 @@ export class Layout1dBase {
     }
   }
 
-  _scrollIfNeeded() {
+  protected _scrollIfNeeded(): void {
     if (this._scrollToIndex === -1) {
       return;
     }
@@ -328,7 +306,7 @@ export class Layout1dBase {
     this._scrollPosition = scrollPosition;
   }
 
-  _emitRange(inProps) {
+  protected _emitRange(inProps = undefined): void {
     const detail = Object.assign(
         {
           first: this._first,
@@ -340,14 +318,14 @@ export class Layout1dBase {
     this.dispatchEvent(new CustomEvent('rangechange', {detail}));
   }
 
-  _emitScrollSize() {
+  protected _emitScrollSize(): void {
     const detail = {
       [this._sizeDim]: this._scrollSize,
     };
     this.dispatchEvent(new CustomEvent('scrollsizechange', {detail}));
   }
 
-  _emitScrollError() {
+  protected _emitScrollError(): void {
     if (this._scrollError) {
       const detail = {
         [this._positionDim]: this._scrollError,
@@ -362,7 +340,7 @@ export class Layout1dBase {
    * Get or estimate the top and left positions of items in the current range.
    * Emit an itempositionchange event with these positions.
    */
-  _emitChildPositions() {
+  protected _emitChildPositions(): void {
     const detail = {};
     for (let idx = this._first; idx <= this._last; idx++) {
       detail[idx] = this._getItemPosition(idx);
@@ -370,15 +348,15 @@ export class Layout1dBase {
     this.dispatchEvent(new CustomEvent('itempositionchange', {detail}));
   }
 
-  _itemDim2Changed() {
+  protected _itemDim2Changed() {
     // Override
   }
 
-  _viewDim2Changed() {
+  protected _viewDim2Changed() {
     // Override
   }
 
-  _scrollPositionChanged(oldPos, newPos) {
+  private _scrollPositionChanged(oldPos, newPos) {
     // When both values are bigger than the max scroll position, keep the
     // current _scrollToIndex, otherwise invalidate it.
     const maxPos = this._scrollSize - this._viewDim1;
@@ -387,27 +365,18 @@ export class Layout1dBase {
     }
   }
 
-  _getActiveItems() {
-    // Override
-  }
+  abstract _getActiveItems(): void;
 
   /**
    * Returns the top and left positioning of the item at idx.
-   * @param {number} idx 
-   * @return {{
-    *  top: number,
-    *  left: number
-    * }}
-    */
-  _getItemPosition(idx) {
-    // Override.
-  }
+   */
+  abstract _getItemPosition(idx: number): Coordinates;
 
-  _getItemSize(idx) {
+  protected _getItemSize(idx: number): Dimensions {
     // Override.
     return {
       [this._sizeDim]: this._itemDim1,
       [this._secondarySizeDim]: this._itemDim2,
-    };
+    } as unknown as Dimensions;
   }
 }

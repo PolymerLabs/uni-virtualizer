@@ -1,39 +1,37 @@
-import {Layout1dBase} from './Layout1dBase.js';
+import {Layout1dBase, Coordinates, Dimensions} from './Layout1dBase.js';
+
+interface ExtendedDimensions {
+  width: number,
+  height: number,
+  marginTop: number,
+  marginRight: number,
+  marginBottom: number,
+  marginLeft: number
+}
+interface ItemBounds {
+  pos: number,
+  size: number
+}
 
 export class Layout1d extends Layout1dBase {
-  _physicalItems;
-  _newPhysicalItems;
-  _metrics;
-  _anchorIdx;
-  _anchorPos;
-  _stable;
-  _needsRemeasure;
-  _nMeasured;
-  _tMeasured;
-  _estimate;
+  _physicalItems: Map<number, ItemBounds> = new Map();
+  _newPhysicalItems: Map<number, ItemBounds> = new Map();
+  _metrics: Map<any, Dimensions> = new Map();
+  _anchorIdx: number = null;
+  _anchorPos: number = null;
+  _stable: boolean = true;
+  _needsRemeasure: boolean = false;
+  _nMeasured: number = 0;
+  _tMeasured: number = 0;
+  _estimate: boolean = true;
 
   constructor(config) {
     super(config);
-    this._physicalItems = new Map();
-    this._newPhysicalItems = new Map();
-
-    this._metrics = new Map();
-
-    this._anchorIdx = null;
-    this._anchorPos = null;
-    this._stable = true;
-
-    this._needsRemeasure = false;
-
-    this._nMeasured = 0;
-    this._tMeasured = 0;
-
-    this._estimate = true;
   }
 
-  updateItemSizes(sizes) {
+  updateItemSizes(sizes: {[key: number]: ExtendedDimensions}): void {
     Object.keys(sizes).forEach((key) => {
-      const metrics = sizes[key], mi = this._getMetrics(key),
+      const metrics = sizes[key], mi = this._getMetrics(Number(key)),
             prevSize = mi[this._sizeDim];
 
       // TODO(valdrin) Handle margin collapsing.
@@ -74,15 +72,15 @@ export class Layout1d extends Layout1dBase {
         Math.round(this._tMeasured / this._nMeasured);
   }
 
-  _getMetrics(idx) {
+  _getMetrics(idx: number): Dimensions {
     return (this._metrics[idx] = this._metrics[idx] || {});
   }
 
-  _getPhysicalItem(idx) {
+  _getPhysicalItem(idx: number): ItemBounds {
     return this._newPhysicalItems.get(idx) || this._physicalItems.get(idx);
   }
 
-  _getSize(idx) {
+  _getSize(idx: number): number | undefined {
     const item = this._getPhysicalItem(idx);
     return item && item.size;
   }
@@ -92,12 +90,12 @@ export class Layout1d extends Layout1dBase {
    * Estimates it if the item at idx is not in the DOM.
    * @param {*} idx 
    */
-  _getPosition(idx) {
+  _getPosition(idx): number {
     const item = this._physicalItems.get(idx);
     return item ? item.pos : (idx * (this._delta)) + this._spacing;
   }
 
-  _calculateAnchor(lower, upper) {
+  _calculateAnchor(lower: number, upper: number): number {
     if (lower === 0) {
       return 0;
     }
@@ -111,7 +109,7 @@ export class Layout1d extends Layout1dBase {
             Math.floor(((lower + upper) / 2) / this._delta)));
   }
 
-  _getAnchor(lower, upper) {
+  _getAnchor(lower: number, upper: number): number {
     if (this._physicalItems.size === 0) {
       return this._calculateAnchor(lower, upper);
     }
@@ -164,7 +162,7 @@ export class Layout1d extends Layout1dBase {
     }
   }
 
-  _getActiveItems() {
+  _getActiveItems(): void {
     if (this._viewDim1 === 0 || this._totalItems === 0) {
       this._clearItems();
     } else {
@@ -180,7 +178,7 @@ export class Layout1d extends Layout1dBase {
   /**
    * Sets the range to empty.
    */
-  _clearItems() {
+  _clearItems(): void {
     this._first = -1;
     this._last = -1;
     this._physicalMin = 0;
@@ -196,7 +194,7 @@ export class Layout1d extends Layout1dBase {
    * Updates _first and _last based on items that should be in the current
    * viewed range.
    */
-  _getItems(lower, upper) {
+  _getItems(lower: number, upper: number): void {
     const items = this._newPhysicalItems;
 
     // The anchorIdx is the anchor around which we reflow. It is designed to
@@ -285,7 +283,7 @@ export class Layout1d extends Layout1dBase {
     }
   }
 
-  _calculateError() {
+  _calculateError(): number {
     if (this._first === 0) {
       return this._physicalMin;
     } else if (this._physicalMin <= 0) {
@@ -300,7 +298,7 @@ export class Layout1d extends Layout1dBase {
     return 0;
   }
 
-  _updateScrollSize() {
+  _updateScrollSize(): void {
     // Reuse previously calculated physical max, as it might be higher than the
     // estimated size.
     super._updateScrollSize();
@@ -308,7 +306,7 @@ export class Layout1d extends Layout1dBase {
   }
 
   // TODO: Can this be made to inherit from base, with proper hooks?
-  _reflow() {
+  _reflow(): void {
     const {_first, _last, _scrollSize} = this;
 
     this._updateScrollSize();
@@ -334,7 +332,7 @@ export class Layout1d extends Layout1dBase {
     }
   }
 
-  _resetReflowState() {
+  _resetReflowState(): void {
     this._anchorIdx = null;
     this._anchorPos = null;
     this._stable = true;
@@ -348,11 +346,11 @@ export class Layout1d extends Layout1dBase {
    *  left: number
    * }}
    */
-  _getItemPosition(idx) {
+  _getItemPosition(idx: number): Coordinates {
     return {
       [this._positionDim]: this._getPosition(idx),
       [this._secondaryPositionDim]: 0,
-    };
+    } as unknown as Coordinates;
   }
 
   /**
@@ -363,19 +361,19 @@ export class Layout1d extends Layout1dBase {
    *  height: number
    * }}
    */
-  _getItemSize(idx) {
+  _getItemSize(idx: number): Dimensions {
     return {
       [this._sizeDim]: this._getSize(idx) || this._itemDim1,
       [this._secondarySizeDim]: this._itemDim2,
-    };
+    } as unknown as Dimensions;
   }
 
-  _viewDim2Changed() {
+  _viewDim2Changed(): void {
     this._needsRemeasure = true;
     this._scheduleReflow();
   }
 
-  _emitRange() {
+  _emitRange(): void {
     const remeasure = this._needsRemeasure;
     const stable = this._stable;
     this._needsRemeasure = false;

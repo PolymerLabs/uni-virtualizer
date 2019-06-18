@@ -14,8 +14,8 @@
     // "noUnusedParameters": true,
     // "noImplicitReturns": true,
     // "noFallthroughCasesInSwitch": true,
-    "outDir": "./"
-    // "experimentalDecorators": true
+    "outDir": "./",
+    "experimentalDecorators": true
   },
   "include": [
     "src/**/*.ts",
