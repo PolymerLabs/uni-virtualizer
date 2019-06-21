@@ -16,9 +16,17 @@ export const LitMixin = Superclass => class extends Superclass {
   // Function for generating each item's DOM
   _template: (item: any, index?: number) => TemplateResult;
 
+  // Children are rendered into this part.
+  // The host of the directive that constructs the scroller.
   _hostPart: NodePart;
   
-  constructor(config) {
+  constructor(config: {
+    part?: NodePart,
+    template?: (item: any, index?: number) => TemplateResult,
+    useShadowDOM?: boolean,
+    scrollTarget?: Element | Window,
+    layout?: any
+  }) {
     const {part, template, useShadowDOM, layout} = config;
     let container = part.startNode.parentNode;
     let scrollTarget = config.scrollTarget || container;
@@ -42,7 +50,10 @@ export const LitMixin = Superclass => class extends Superclass {
     this._pool.push(part);
   }
 
-  // Lit-specific overrides for node manipulation
+  /*
+   * Lit-specific overrides for node manipulation
+   */
+
   get _kids(): Array<Node> {
     return this._ordered.map(p => p.startNode.nextElementSibling);
   }
@@ -104,8 +115,18 @@ export const LitMixin = Superclass => class extends Superclass {
 
 export const LitRepeater = LitMixin(VirtualRepeater);
 
+interface RepeatConfig {
+  template?: (item: any, index?: number) => TemplateResult,
+  part?: NodePart,
+  first?: number,
+  num?: number,
+  totalItems?: number,
+}
+
 const partToRepeater = new WeakMap();
-export const repeat = directive((config = {}) => async part => {
+export const repeat = directive((config: RepeatConfig = {}) => async (part: NodePart) => {
+  // Retain the repeater so that re-rendering the directive's parent won't
+  // create another one.
   let repeater = partToRepeater.get(part);
   if (!repeater) {
     if (!part.startNode.isConnected) {

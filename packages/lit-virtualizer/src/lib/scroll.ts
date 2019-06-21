@@ -36,6 +36,8 @@ interface ScrollConfig {
  * See ScrollConfig interface for configuration options.
  */
 export const scroll = directive((config: ScrollConfig = {}) => async (part: NodePart) => {
+  // Retain the scroller so that re-rendering the directive's parent won't
+  // create another one.
   let scroller = partToScroller.get(part);
   if (!scroller) {
     if (!part.startNode.isConnected) {
@@ -45,7 +47,6 @@ export const scroll = directive((config: ScrollConfig = {}) => async (part: Node
     scroller = new LitScroller({part, template, layout, scrollTarget, useShadowDOM});
     partToScroller.set(part, scroller);
   }
-  // TODO: Can we set these in a better way?
   Object.assign(scroller, {
     items: config.items,
     totalItems: config.totalItems === undefined ? null : config.totalItems
