@@ -36,4 +36,14 @@ export default [
       resolve(),
     ]
   },
+  {
+    input: 'public/scroll-to-index-lit-html/index.js',
+    output: {
+      dir: 'public/scroll-to-index-lit-html/build',
+      format: 'esm'
+    },
+    plugins: [
+      resolve(),
+    ]
+  },
 ];
