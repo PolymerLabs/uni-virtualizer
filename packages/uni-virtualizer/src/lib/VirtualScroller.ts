@@ -128,6 +128,9 @@ export class VirtualScroller extends VirtualRepeater {
   // completed.
   private _skipNextChildrenSizeChanged: boolean = false;
 
+  // Index and position of item to scroll to.
+  private _scrollTo: {index: number, position?: string} = null;
+
   constructor(config: VirtualScrollerConfig) {
     // TODO: Shouldn't we just pass config. Why do Object.assign after?
     super({});
@@ -279,6 +282,15 @@ export class VirtualScroller extends VirtualRepeater {
   }
 
   /**
+   * Index and position of item to scroll to. The scroller will fix to that point
+   * until the user scrolls.
+   */
+  set scrollTo(newValue: {index: number, position?: string}) {
+    this._scrollTo = newValue;
+    this._scheduleUpdateView();
+  }
+
+  /**
    * Display the items in the current range.
    * Continue relayout of child positions until they have stabilized.
    */
@@ -295,10 +307,17 @@ export class VirtualScroller extends VirtualRepeater {
     // Update layout properties before rendering to have correct first, num,
     // scroll size, children positions.
     this._layout.totalItems = this.totalItems;
+
     if (this._needsUpdateView) {
       this._needsUpdateView = false;
       this._updateView();
     }
+
+    if (this._scrollTo !== null) {
+      this._layout.scrollToIndex(this._scrollTo.index, this._scrollTo.position);
+      this._scrollTo = null;
+    }
+
     this._layout.reflowIfNeeded();
     // Keep rendering until there is no more scheduled renders.
     while (true) {
@@ -436,6 +455,8 @@ export class VirtualScroller extends VirtualRepeater {
       top = this._containerElement.scrollTop;
     } else {
       const containerBounds = this._containerElement.getBoundingClientRect();
+      console.log("calced", containerBounds.top + scrollY)
+      console.log("offsetTop", (this._containerElement as HTMLElement).offsetTop)
       const scrollBounds = this._scrollTarget ?
           this._scrollTarget.getBoundingClientRect() :
           {
