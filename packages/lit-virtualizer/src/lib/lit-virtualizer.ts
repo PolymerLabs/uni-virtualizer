@@ -11,7 +11,7 @@ import { scroll } from './scroll';
 @customElement('lit-virtualizer')
 export class LitVirtualizer extends LitElement {
     @property()
-    _renderItem: (item: any, index?: number) => TemplateResult;
+    private _renderItem: (item: any, index?: number) => TemplateResult;
 
     @property()
     items: Array<any>;
