@@ -36,4 +36,14 @@ export default [
       resolve(),
     ]
   },
+  {
+    input: 'public/first-visible-index/index.js',
+    output: {
+      dir: 'public/first-visible-index/build',
+      format: 'esm'
+    },
+    plugins: [
+      resolve(),
+    ]
+  },
 ];
