@@ -1,5 +1,5 @@
-import { m as isTemplatePartActive, p as parts, T as TemplateResult, h as render$1, t as templateCaches, q as marker, o as Template, k as TemplateInstance, r as removeNodes } from './chunk-2addfd45.js';
-export { S as SVGTemplateResult, T as TemplateResult } from './chunk-2addfd45.js';
+import { m as isTemplatePartActive, p as parts, h as render$1, t as templateCaches, q as marker, o as Template, k as TemplateInstance, r as removeNodes, T as TemplateResult } from './chunk-608fdc3d.js';
+export { S as SVGTemplateResult, T as TemplateResult } from './chunk-608fdc3d.js';
 export { html, svg } from './lit-html.js';
 
 /**
@@ -217,8 +217,12 @@ const shadyRenderSet = new Set();
  * not be scoped and the <style> will be left in the template and rendered
  * output.
  */
-const prepareTemplateStyles = (renderedDOM, template, scopeName) => {
+const prepareTemplateStyles = (scopeName, renderedDOM, template) => {
     shadyRenderSet.add(scopeName);
+    // If `renderedDOM` is stamped from a Template, then we need to edit that
+    // Template's underlying template element. Otherwise, we create one here
+    // to give to ShadyCSS, which still requires one while scoping.
+    const templateElement = !!template ? template.element : document.createElement('template');
     // Move styles out of rendered DOM and store.
     const styles = renderedDOM.querySelectorAll('style');
     const { length } = styles;
@@ -227,7 +231,14 @@ const prepareTemplateStyles = (renderedDOM, template, scopeName) => {
         // Ensure prepareTemplateStyles is called to support adding
         // styles via `prepareAdoptedCssText` since that requires that
         // `prepareTemplateStyles` is called.
-        window.ShadyCSS.prepareTemplateStyles(template.element, scopeName);
+        //
+        // ShadyCSS will only update styles containing @apply in the template
+        // given to `prepareTemplateStyles`. If no lit Template was given,
+        // ShadyCSS will not be able to update uses of @apply in any relevant
+        // template. However, this is not a problem because we only create the
+        // template for the purpose of supporting `prepareAdoptedCssText`,
+        // which doesn't support @apply at all.
+        window.ShadyCSS.prepareTemplateStyles(templateElement, scopeName);
         return;
     }
     const condensedStyle = document.createElement('style');
@@ -245,19 +256,24 @@ const prepareTemplateStyles = (renderedDOM, template, scopeName) => {
     removeStylesFromLitTemplates(scopeName);
     // And then put the condensed style into the "root" template passed in as
     // `template`.
-    const content = template.element.content;
-    insertNodeIntoTemplate(template, condensedStyle, content.firstChild);
+    const content = templateElement.content;
+    if (!!template) {
+        insertNodeIntoTemplate(template, condensedStyle, content.firstChild);
+    }
+    else {
+        content.insertBefore(condensedStyle, content.firstChild);
+    }
     // Note, it's important that ShadyCSS gets the template that `lit-html`
     // will actually render so that it can update the style inside when
     // needed (e.g. @apply native Shadow DOM case).
-    window.ShadyCSS.prepareTemplateStyles(template.element, scopeName);
+    window.ShadyCSS.prepareTemplateStyles(templateElement, scopeName);
     const style = content.querySelector('style');
     if (window.ShadyCSS.nativeShadow && style !== null) {
         // When in native Shadow DOM, ensure the style created by ShadyCSS is
         // included in initially rendered output (`renderedDOM`).
         renderedDOM.insertBefore(style.cloneNode(true), renderedDOM.firstChild);
     }
-    else {
+    else if (!!template) {
         // When no style is left in the template, parts will be broken as a
         // result. To fix this, we put back the style node ShadyCSS removed
         // and then tell lit to remove that node from the template.
@@ -329,11 +345,14 @@ const prepareTemplateStyles = (renderedDOM, template, scopeName) => {
  * supported.
  */
 const render = (result, container, options) => {
+    if (!options || typeof options !== 'object' || !options.scopeName) {
+        throw new Error('The `scopeName` option is required.');
+    }
     const scopeName = options.scopeName;
     const hasRendered = parts.has(container);
     const needsScoping = compatibleShadyCSSVersion &&
         container.nodeType === 11 /* Node.DOCUMENT_FRAGMENT_NODE */ &&
-        !!container.host && result instanceof TemplateResult;
+        !!container.host;
     // Handle first render to a scope specially...
     const firstScopeRender = needsScoping && !shadyRenderSet.has(scopeName);
     // On first scope render, render into a fragment; this cannot be a single
@@ -352,9 +371,15 @@ const render = (result, container, options) => {
     if (firstScopeRender) {
         const part = parts.get(renderContainer);
         parts.delete(renderContainer);
-        if (part.value instanceof TemplateInstance) {
-            prepareTemplateStyles(renderContainer, part.value.template, scopeName);
-        }
+        // ShadyCSS might have style sheets (e.g. from `prepareAdoptedCssText`)
+        // that should apply to `renderContainer` even if the rendered value is
+        // not a TemplateInstance. However, it will only insert scoped styles
+        // into the document if `prepareTemplateStyles` has already been called
+        // for the given scope name.
+        const template = part.value instanceof TemplateInstance ?
+            part.value.template :
+            undefined;
+        prepareTemplateStyles(scopeName, renderContainer, template);
         removeNodes(container, container.firstChild);
         container.appendChild(renderContainer);
         parts.set(container, part);
@@ -363,7 +388,7 @@ const render = (result, container, options) => {
     // initial render to this container.
     // This is needed whenever dynamic changes are made so it would be
     // safest to do every render; however, this would regress performance
-    // so we leave it up to the user to call `ShadyCSSS.styleElement`
+    // so we leave it up to the user to call `ShadyCSS.styleElement`
     // for dynamic changes.
     if (!hasRendered && needsScoping) {
         window.ShadyCSS.styleElement(container.host);
@@ -525,9 +550,7 @@ class UpdatingElement extends HTMLElement {
                 return this[key];
             },
             set(value) {
-                // tslint:disable-next-line:no-any no symbol in index
                 const oldValue = this[name];
-                // tslint:disable-next-line:no-any no symbol in index
                 this[key] = value;
                 this._requestUpdate(name, oldValue);
             },
@@ -633,7 +656,8 @@ class UpdatingElement extends HTMLElement {
      */
     initialize() {
         this._saveInstanceProperties();
-        // ensures first update will be caught by an early access of `updateComplete`
+        // ensures first update will be caught by an early access of
+        // `updateComplete`
         this._requestUpdate();
     }
     /**
@@ -675,10 +699,10 @@ class UpdatingElement extends HTMLElement {
     }
     connectedCallback() {
         this._updateState = this._updateState | STATE_HAS_CONNECTED;
-        // Ensure first connection completes an update. Updates cannot complete before
-        // connection and if one is pending connection the `_hasConnectionResolver`
-        // will exist. If so, resolve it to complete the update, otherwise
-        // requestUpdate.
+        // Ensure first connection completes an update. Updates cannot complete
+        // before connection and if one is pending connection the
+        // `_hasConnectionResolver` will exist. If so, resolve it to complete the
+        // update, otherwise requestUpdate.
         if (this._hasConnectedResolver) {
             this._hasConnectedResolver();
             this._hasConnectedResolver = undefined;
@@ -1040,7 +1064,6 @@ const standardProperty = (options, element) => {
             //     initializer: descriptor.initializer,
             //   }
             // ],
-            // tslint:disable-next-line:no-any decorator
             initializer() {
                 if (typeof element.initializer === 'function') {
                     this[element.key] = element.initializer.call(this);
@@ -1222,6 +1245,9 @@ const textFromCSSResult = (value) => {
     if (value instanceof CSSResult) {
         return value.cssText;
     }
+    else if (typeof value === 'number') {
+        return value;
+    }
     else {
         throw new Error(`Value passed to 'css' function must be a 'css' function result: ${value}. Use 'unsafeCSS' to pass non-literal values, but
             take care to ensure page security.`);
@@ -1255,7 +1281,7 @@ const css = (strings, ...values) => {
 // This line will be used in regexes to search for LitElement usage.
 // TODO(justinfagnani): inject version number at build time
 (window['litElementVersions'] || (window['litElementVersions'] = []))
-    .push('2.0.1');
+    .push('2.2.0');
 /**
  * Minimal implementation of Array.prototype.flat
  * @param arr the array to flatten

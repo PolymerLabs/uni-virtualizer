@@ -1,4 +1,4 @@
-import './chunk-2addfd45.js';
+import './chunk-608fdc3d.js';
 import { html } from './lit-html.js';
 import { LitElement, css } from './lit-element.js';
 import './lit-virtualizer.js';
@@ -97,7 +97,7 @@ class Yo extends LitElement {
                 layout='vertical'
                 .scrollTarget=${window}
                 .items=${this.data}
-                .template=${contact => html`
+                .renderItem=${contact => html`
                     <wrapped-contact .contact=${contact}></wrapped-contact>
                 `}>
             </lit-virtualizer>

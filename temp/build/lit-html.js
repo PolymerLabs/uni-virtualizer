@@ -1,5 +1,5 @@
-import { P as PropertyCommitter, E as EventPart, B as BooleanAttributePart, A as AttributeCommitter, N as NodePart, T as TemplateResult, S as SVGTemplateResult } from './chunk-2addfd45.js';
-export { A as AttributeCommitter, c as AttributePart, B as BooleanAttributePart, E as EventPart, N as NodePart, P as PropertyCommitter, g as PropertyPart, S as SVGTemplateResult, o as Template, k as TemplateInstance, T as TemplateResult, l as createMarker, d as directive, i as isDirective, e as isIterable, f as isPrimitive, m as isTemplatePartActive, n as noChange, b as nothing, p as parts, r as removeNodes, h as render, a as reparentNodes, t as templateCaches, j as templateFactory } from './chunk-2addfd45.js';
+import { P as PropertyCommitter, E as EventPart, B as BooleanAttributePart, A as AttributeCommitter, N as NodePart, T as TemplateResult, S as SVGTemplateResult } from './chunk-608fdc3d.js';
+export { A as AttributeCommitter, c as AttributePart, B as BooleanAttributePart, E as EventPart, N as NodePart, P as PropertyCommitter, g as PropertyPart, S as SVGTemplateResult, o as Template, k as TemplateInstance, T as TemplateResult, l as createMarker, d as directive, i as isDirective, e as isIterable, f as isPrimitive, m as isTemplatePartActive, n as noChange, b as nothing, p as parts, r as removeNodes, h as render, a as reparentNodes, t as templateCaches, j as templateFactory } from './chunk-608fdc3d.js';
 
 /**
  * @license
@@ -68,7 +68,7 @@ const defaultTemplateProcessor = new DefaultTemplateProcessor();
 // IMPORTANT: do not change the property name or the assignment expression.
 // This line will be used in regexes to search for lit-html usage.
 // TODO(justinfagnani): inject version number at build time
-(window['litHtmlVersions'] || (window['litHtmlVersions'] = [])).push('1.0.0');
+(window['litHtmlVersions'] || (window['litHtmlVersions'] = [])).push('1.1.1');
 /**
  * Interprets a template literal as an HTML template that can efficiently
  * render to and update a container.
