@@ -1,3 +1,13 @@
+## [0.5.0] - 2021-05-01
+### Changed
+- Significant refactoring
+- Now emits custom events, access data from `detail` object
+
+### Added
+- Support for older browsers (IE11, legacy Edge)
+- Benchmarking support (subject to change)
+- Work-in-progress grid layouts, not ready for use
+
 ## [0.4.2] - 2019-11-15
 ### Changed
 - Appended `.js` to all local imports.

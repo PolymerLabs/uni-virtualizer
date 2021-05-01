@@ -16,6 +16,5 @@
     "start": "http-server & npm run build-and-watch --prefix packages/uni-virtualizer-examples",
     "deploy-examples": "./scripts/deploy-examples.sh",
     "init": "npm run bootstrap; npm run build --prefix packages/lit-virtualizer; npm run bootstrap;"
-  },
-  "dependencies": {}
+  }
 }

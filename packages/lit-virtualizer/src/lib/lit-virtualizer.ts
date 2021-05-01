@@ -17,18 +17,18 @@ export class LitVirtualizer<Item, Child extends HTMLElement> extends LitElement 
     @property()
     private _renderItem: (item: Item, index?: number) => TemplateResult;
 
-    @property()
+    @property({type: Number})
     private _first: number = 0;
 
-    @property()
+    @property({type: Number})
     private _last: number = -1;
 
-    @property()
+    @property({attribute: false})
     private _items: Array<Item>;
 
     private _scroller: VirtualScroller<Item, Child> = null;
 
-    @property()
+    @property({attribute: false})
     scrollTarget: Element | Window = this;
 
     @property()
