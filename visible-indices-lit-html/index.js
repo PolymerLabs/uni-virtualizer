@@ -12,7 +12,7 @@ const handleVisibilityChange = (e) => {
 }
 
 const example = (contacts) => html`
-    <section @rangeChanged=${handleVisibilityChange} style="height: 100%;">
+    <section @visibilityChanged=${handleVisibilityChange} style="height: 100%;">
         ${scroll({
             items: contacts,
             layout: Layout1d,

@@ -1879,7 +1879,7 @@ const handleVisibilityChange = (e) => {
     lastVisibleResult.innerHTML = e.detail.lastVisible;
 };
 
-const example = (contacts) => T`<section @rangeChanged="${handleVisibilityChange}" style="height:100%">${scroll({
+const example = (contacts) => T`<section @visibilityChanged="${handleVisibilityChange}" style="height:100%">${scroll({
             items: contacts,
             layout: Layout1d,
             renderItem: ({ mediumText, index }) =>
