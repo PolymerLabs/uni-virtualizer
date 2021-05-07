@@ -15,7 +15,7 @@
         "bench": "tach --root=../.. --browser=chrome-headless test/benchmarks/${BENCH:-basic}.html --measure=fcp",
         "bench:debug": "tach --root=../.. test/benchmarks/${BENCH:-basic}.html --measure=fcp",
         "bench:scroll": "tach --force-clean-npm-install --config=test/benchmarks/scrollingBenchmarks.json",
-        "build": "tsc",
+        "build": "tsc & copyfiles -u 2 src/lib/uni-virtualizer/lib/polyfills/resize-observer-polyfill/ResizeObserver.es.js lib",
         "checksize": "rollup -c; rm lit-virtualizer.bundled.js lit-virtualizer-with-polyfills.bundled.js",
         "clean": "rm -r node_modules/",
         "lint": "tslint --project ./",
@@ -27,6 +27,7 @@
     "author": "The Polymer Authors",
     "devDependencies": {
         "chai": "^4.2.0",
+        "copyfiles": "^2.4.1",
         "http-server": "^0.11.1",
         "karma": "^4.1.0",
         "karma-chai": "^0.1.0",
@@ -50,7 +51,6 @@
         "event-target-shim": "^5.0.1",
         "lit-element": "^2.3.1",
         "lit-html": "^1.2.1",
-        "resize-observer-polyfill": "github:rictic/resize-observer-polyfill#observeWithinShadowRoots",
         "tslib": "^1.10.0"
     }
 }
