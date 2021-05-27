@@ -1,16 +1,24 @@
+## [0.7.0] - 2021-05-26
+### Changed
+- Made significant changes and improvements to TypeScript types (work ongoing)
+
+### Fixed
+- Fixed scrolling issue on iOS ([#54](https://github.com/PolymerLabs/uni-virtualizer/issues/54))
+
 ## [0.6.0] - 2021-05-01
 - This is a stopgap release to unblock migrations to Lit 2.0
-- In the near future:
-  - Source will move to the Lit monorepo
-  - Subsequent releases will likely be as `@lit-labs/virtualizer`
+- In the near future, source will move to the Lit monorepo
 
 ### Changed
 - Migrated to Lit 2.x
 
 ## [0.5.0] - 2021-05-01
 ### Changed
+- Changed npm package to `@lit-labs/virtualizer`
 - Significant refactoring
 - Now emits custom events, access data from `detail` object
+- `layout` property is now required for both the `lit-virtualizer`
+  element and the `scroll()` directive
 
 ### Added
 - Support for older browsers (IE11, legacy Edge)
