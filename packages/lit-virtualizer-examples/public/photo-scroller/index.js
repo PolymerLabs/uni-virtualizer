@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { classMap } from 'lit/directives/class-map.js';
 import '@lit-labs/virtualizer';
-import { flow } from '@lit-labs/virtualizer/layouts/FlowLayout.js';
+import { flow } from '@lit-labs/virtualizer/layouts/flow.js';
 import { virtualizerRef } from '@lit-labs/virtualizer/Virtualizer.js';
 import { getPhotos, getUrl } from "../../lib/flickr";
 

@@ -1,18 +1,18 @@
 import { render, html } from 'lit';
-import { virtualize } from '@lit-labs/virtualizer/virtualize.js';
+import { virtualize, virtualizerRef } from '@lit-labs/virtualizer/virtualize.js';
 
 import { runBenchmarkIfRequested } from '../../lib/benchmark.js';
 
-const example = (contacts, scrollToIndex = null) => html`
+const example = (contacts, scrollPosition = null) => html`
     ${virtualize({
         scroller: true,
         items: contacts,
         renderItem: ({ longText, index }) => html`<p>${index}) ${longText}</p>`,
-        scrollToIndex: scrollToIndex
+        scrollPosition: scrollPosition
     })}
 `;
 
-let contacts;
+let contacts, virtualizer;
 
 (async function go() {
     contacts = await(await fetch('../shared/contacts.json')).json();
@@ -21,6 +21,9 @@ let contacts;
     runBenchmarkIfRequested(container);
 })();
 
-window.scrollToIndex = (index, position) => {
-    render(example(contacts, {index, position}), document.getElementById("container"));
+window.scrollElementIntoView = ({index, block, behavior}) => {
+    if (!virtualizer) {
+        virtualizer = document.getElementById('container')[virtualizerRef];
+    }
+    virtualizer.scrollElementIntoView({index, block, behavior});
 }

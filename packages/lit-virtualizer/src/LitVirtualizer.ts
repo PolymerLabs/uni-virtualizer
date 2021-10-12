@@ -8,7 +8,7 @@ import { html, LitElement, TemplateResult } from 'lit';
 import { property } from 'lit/decorators/property.js';
 import { state } from 'lit/decorators/state.js';
 import { repeat } from 'lit/directives/repeat.js';
-import { Virtualizer, VirtualizerHostElement, virtualizerRef, RangeChangedEvent } from './Virtualizer.js';
+import { Virtualizer, VirtualizerHostElement, virtualizerRef, RangeChangedEvent, ScrollPositionOptions, ScrollIndexIntoViewOptions } from './Virtualizer.js';
 import { LayoutSpecifier, Layout, LayoutConstructor } from './layouts/shared/Layout.js';
 
 
@@ -63,12 +63,28 @@ export class LitVirtualizer extends LitElement {
         return (this as VirtualizerHostElement)[virtualizerRef]!.layout;
     }
 
+    @property({attribute: false})
+    set scrollPosition(value: ScrollPositionOptions) {
+        if (this._virtualizer) {
+            this._virtualizer.scrollPosition = value;
+        }
+    }
+
     /**
      * Scroll to the specified index, placing that item at the given position
      * in the scroll view.
      */
-    scrollToIndex(index: number, position: string = 'start') {
-        this._virtualizer!.scrollToIndex = { index, position };
+    scrollElementIntoView(options: ScrollIndexIntoViewOptions) {
+        this._virtualizer!.scrollElementIntoView(options);
+    }
+
+    scrollTo(options: ScrollToOptions): void;
+    scrollTo(x: number, y: number): void;
+    scrollTo(p1: ScrollToOptions | number, p2?: number) {
+        const options: ScrollToOptions = (typeof p1 === 'number' && typeof p2 === 'number')
+            ? { left: p1, top: p2 }
+            : p1 as ScrollToOptions;
+        this._virtualizer!.scrollTo(options);
     }
 
     updated() {

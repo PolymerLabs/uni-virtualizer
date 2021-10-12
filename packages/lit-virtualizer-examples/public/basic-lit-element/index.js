@@ -36,10 +36,10 @@ class ContactCard extends LitElement {
     }
 
     render() {
-        const { mediumText, color, name } = this.contact || {};
+        const { mediumText, color, name, index } = this.contact || {};
         return html`
             <details style="background: ${color}">
-                <summary @click=${this._handleSummaryClick}>${name}</summary>
+                <summary @click=${this._handleSummaryClick}>${`${index}: ${name}`}</summary>
                 <p style=${styleMap(this._summaryStyle())}>${mediumText}</p>
             </details>
         `;
@@ -100,10 +100,11 @@ class ContactList extends LitElement {
 
     render() {
         return html`
-            <lit-virtualizer scroller
+            <lit-virtualizer
                 .items=${this.data}
-                .renderItem=${this._renderContact}>
-            </lit-virtualizer>
+                .renderItem=${this._renderContact}
+                .scrollPosition=${{index: 5000}}
+            ></lit-virtualizer>
         `;
     }
 }

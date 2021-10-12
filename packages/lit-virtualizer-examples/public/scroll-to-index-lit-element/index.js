@@ -17,7 +17,7 @@ let virtualizer;
     document.body.appendChild(virtualizer);
 
     window.virtualizer = virtualizer;
-    window.scrollToIndex = virtualizer.scrollToIndex.bind(virtualizer);
+    window.scrollElementIntoView = virtualizer.scrollElementIntoView.bind(virtualizer);
 
     runBenchmarkIfRequested(virtualizer);
 })();

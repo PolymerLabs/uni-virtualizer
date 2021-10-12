@@ -9,7 +9,9 @@ import { directive, PartInfo, PartType } from 'lit/directive.js';
 import { AsyncDirective } from 'lit/async-directive.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { Layout, LayoutConstructor, LayoutSpecifier } from './layouts/shared/Layout.js';
-import { Virtualizer, ScrollToIndexValue, RangeChangedEvent } from './Virtualizer.js';
+import { Virtualizer, ScrollPositionOptions, RangeChangedEvent } from './Virtualizer.js';
+
+export { virtualizerRef } from './Virtualizer.js';
 
 /**
  * Configuration options for the virtualize directive.
@@ -36,7 +38,7 @@ interface VirtualizeDirectiveConfig {
     /**
      * Index and position of the item to scroll to.
      */
-    scrollToIndex?: ScrollToIndexValue;
+    scrollPosition?: ScrollPositionOptions;
   }
 
 /*export */const defaultKeyFunction = (item: any) => item;
@@ -99,8 +101,8 @@ class VirtualizeDirective extends AsyncDirective {
         if (config.layout) {
             virtualizer!.layout = config.layout;
         }
-        if (config.scrollToIndex) {
-            virtualizer!.scrollToIndex = config.scrollToIndex;
+        if (config.scrollPosition) {
+            virtualizer!.scrollPosition = config.scrollPosition;
         }
     }
 

@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+import { ScrollIndexIntoViewOptions } from "../../Virtualizer";
+
 export type dimension = 'height' | 'width';
 export type Size = {
   [key in dimension]: number
@@ -43,6 +45,10 @@ export interface LayoutSpecifier {
 
 export type LayoutSpecifierFactory = (config?: object) => LayoutSpecifier;
 
+export interface PinnedItem {
+  index: number,
+  block?: ScrollLogicalPosition
+}
 
 export type ScrollDirection = 'vertical' | 'horizontal';
 
@@ -72,7 +78,13 @@ export type ScrollDirection = 'vertical' | 'horizontal';
 
   removeEventListener: Function;
 
-  scrollToIndex: (index: number, position: string) => void;
+  // scrollToIndex: (index: number, align?: ScrollLogicalPosition) => void;
+
+  pinnedItem: PinnedItem | null
+
+  pinnedPosition: ScrollToOptions | null;
+
+  getScrollIntoViewCoordinates: (options: ScrollIndexIntoViewOptions) => Positions
 
   /**
    * Called by a Virtualizer when an update that
