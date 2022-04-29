@@ -36,7 +36,7 @@
         "clean": "rm -r node_modules/",
         "lint": "tslint --project ./",
         "prepare": "npm run build",
-        "test": "web-test-runner test/**/*.test.js --node-resolve",
+        "test": "web-test-runner test/**/*.test.js --node-resolve --esbuild-target auto",
         "test:screenshot": "cd test/screenshot && rollup -c && mocha screenshot.js",
         "generate-screenshots": "cd test/screenshot && rollup -c && mocha screenshot.js --generate-screenshots"
     },
@@ -52,6 +52,7 @@
     ],
     "devDependencies": {
         "@esm-bundle/chai": "^4.3.4-fix.0",
+        "@web/dev-server-esbuild": "^0.3.0",
         "@web/test-runner": "^0.13.27",
         "@web/test-runner-mocha": "^0.7.5",
         "chai": "^4.2.0",
@@ -60,7 +61,6 @@
         "mocha": "^6.1.4",
         "pixelmatch": "^4.0.2",
         "pngjs": "^3.4.0",
-        "puppeteer": "^1.17.0",
         "rollup": "^1.11.2",
         "rollup-plugin-filesize": "^6.1.1",
         "rollup-plugin-node-resolve": "^4.2.3",
