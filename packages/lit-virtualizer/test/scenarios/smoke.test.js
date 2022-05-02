@@ -39,7 +39,6 @@ describe("virtualize", function () {
             items: ["foo", "bar", "baz"],
             renderItem: (item) => html`<p>${item}</p>`,
             layout: flow(),
-            scrollTarget: window,
         })}
         `;
 
