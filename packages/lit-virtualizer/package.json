@@ -36,7 +36,7 @@
         "clean": "rm -r node_modules/",
         "lint": "tslint --project ./",
         "prepare": "npm run build",
-        "test": "web-test-runner test/**/*.test.js --node-resolve --esbuild-target auto",
+        "test": "npm run build & web-test-runner test/**/*.test.js --node-resolve --esbuild-target auto",
         "test:screenshot": "cd test/screenshot && rollup -c && mocha screenshot.js",
         "generate-screenshots": "cd test/screenshot && rollup -c && mocha screenshot.js --generate-screenshots"
     },

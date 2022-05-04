@@ -8,7 +8,7 @@
  * Use this after rendering, resizing or scrolling to `await` the
  * reflow necessary before validating events and visibility changes.
  */
-export async function wait(n=0) {
+ export async function wait(n=0) {
     await new Promise(resolve => requestAnimationFrame(resolve));
     return new Promise(resolve => setTimeout(resolve, n));
 };
@@ -21,11 +21,11 @@ export async function wait(n=0) {
  * Before/After parameters are given to the function to ensure there are no user-error
  * cases where teardown is forgotten/skipped.
  */
-export function ignoreBenignErrors(before, after) {
+export function ignoreBenignErrors(before: Mocha.HookFunction, after: Mocha.HookFunction) {
     ignoreWindowErrors(before, after, /^(ResizeObserver loop limit exceeded)$/);
 }
-export function ignoreWindowErrors(before, after, regexp) {
-    let onerror;
+export function ignoreWindowErrors(before: Mocha.HookFunction, after: Mocha.HookFunction, regexp: RegExp) {
+    let onerror: OnErrorEventHandler;
     before(() => {
         onerror = window.onerror;
         window.onerror = (err) => {
@@ -33,7 +33,9 @@ export function ignoreWindowErrors(before, after, regexp) {
                 console.warn(`Ignored Error: ${err}`);
                 return false;
             }
-            return onerror.apply(window, arguments);
+            if (onerror) {
+                return onerror.apply(window, [...(arguments as unknown as [event: string | Event, source?: string | undefined, lineno?: number | undefined, colno?: number | undefined, error?: Error | undefined])]);
+            }
         };
     });
     after(() => {

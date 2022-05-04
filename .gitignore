@@ -3,10 +3,15 @@ build
 **/**/tsconfig.tsbuildinfo
 .DS_Store
 
-/layouts
-/polyfillLoaders
-/polyfills
+/packages/lit-virtualizer/layouts
+/packages/lit-virtualizer/polyfillLoaders
+/packages/lit-virtualizer/polyfills
 
-/lit-virtualizer.*
-/virtualize.*
-/Virtualizer.*
+/packages/lit-virtualizer/lit-virtualizer.*
+/packages/lit-virtualizer/LitVirtualizer.*
+/packages/lit-virtualizer/virtualize.*
+/packages/lit-virtualizer/Virtualizer.*
+/packages/lit-virtualizer/test/*.js
+/packages/lit-virtualizer/test/*.ts
+/packages/lit-virtualizer/test/*.map
+/packages/lit-virtualizer/test/scenarios/*
