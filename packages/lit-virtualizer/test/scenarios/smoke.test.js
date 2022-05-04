@@ -4,14 +4,17 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-import { wait } from "../helpers.js";
+import { ignoreBenignErrors, wait } from "../helpers.js";
 import { expect } from "@esm-bundle/chai";
 import { LitVirtualizer } from "../../lit-virtualizer.js";
 import { virtualize } from "../../virtualize.js";
 import { flow } from "../../layouts/flow.js";
 import { html, render } from "lit";
 
+ignoreBenignErrors(beforeEach, afterEach);
+
 describe("<lit-virtualizer>", function () {
+
     it("registers lit-virtualizer as a custom element", function () {
         const lvs = document.createElement("lit-virtualizer");
         expect(lvs).to.be.instanceOf(LitVirtualizer);
