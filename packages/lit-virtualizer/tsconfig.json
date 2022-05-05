@@ -11,7 +11,7 @@
     "inlineSources": true,
     // "outDir": "./development/",
     "outDir": "./",
-    // "rootDir": "./src",
+    "rootDir": "./src",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -27,29 +27,9 @@
   "include": [
     "src/**/*.ts"
   ],
+  "exclude": [
+    "*.d.ts",
+    "**/*.d.ts"
+  ],
   "references": []
 }
-// {
-//   "compilerOptions": {
-//     "target": "es2017",
-//     "module": "esNext",
-//     "moduleResolution": "node",
-//     "lib": ["es2017", "dom"],
-//     "declaration": true,
-//     "declarationMap": true,
-//     // "sourceMap": true,
-//     // "inlineSources": true,
-//     // "strict": true,
-//     "noUnusedLocals": true,
-//     "noUnusedParameters": true,
-//     "noImplicitReturns": true,
-//     "noFallthroughCasesInSwitch": true,
-//     "outDir": "./",
-//     "experimentalDecorators": true,
-//     "importHelpers": true
-//   },
-//   "include": [
-//     "src/**/*.ts",
-//   ],
-//   "exclude": []
-// }
