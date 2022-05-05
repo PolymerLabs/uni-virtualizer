@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-import { ignoreBenignErrors, ignoreWindowErrors } from "../helpers";
+import { ignoreBenignErrors, ignoreWindowErrors } from "../helpers.js";
 import { expect } from "@esm-bundle/chai";
  
 describe('ignoreBenignErrors', () => {

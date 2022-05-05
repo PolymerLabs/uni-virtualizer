@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-// import {mochaHooks} from './test/benign-errors-root-hooks.js';
-
 export default {
     testFramework: {
         config: {
