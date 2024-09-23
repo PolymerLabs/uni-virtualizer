@@ -61,7 +61,7 @@
         "mocha": "^6.1.4",
         "pixelmatch": "^4.0.2",
         "pngjs": "^3.4.0",
-        "rollup": "^1.11.2",
+        "rollup": "^3.29.5",
         "rollup-plugin-filesize": "^6.1.1",
         "rollup-plugin-node-resolve": "^4.2.3",
         "rollup-plugin-terser": "^5.0.0",
